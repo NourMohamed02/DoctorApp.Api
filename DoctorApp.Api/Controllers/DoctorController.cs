@@ -2,6 +2,7 @@
 using DoctorApp.Context.entities;
 using DoctorApp.DB.Context;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace DoctorApp.Api.Controllers
 {
@@ -50,5 +51,23 @@ namespace DoctorApp.Api.Controllers
 
             return Ok("Doctor Registered Successfully");
         }
+        [HttpGet("BySpecialization/{specializationId}")]
+        public async Task<IActionResult> GetDoctorsBySpecialization(int specializationId)
+        {
+            var doctors = await _context.DoctorSpecializations
+                .Where(ds => ds.SpecializationId == specializationId)
+                .Include(ds => ds.Doctor)
+                .ThenInclude(d => d.users)
+                .Select(ds => new
+                {
+                    DoctorId = ds.Doctor.Id,
+                    Name = ds.Doctor.users.name,
+                    HourRate = ds.Doctor.HourRate
+                })
+                .ToListAsync();
+
+            return Ok(doctors);
+        }
+
     }
 }
