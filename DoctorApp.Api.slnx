@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="DoctorApp.Api/DoctorApp.Api.csproj" />
+  <Project Path="DoctorApp.Context/DoctorApp.Context.csproj" />
+</Solution>
