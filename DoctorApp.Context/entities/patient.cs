@@ -16,7 +16,9 @@ namespace DoctorApp.Context.entities
        
 
         public string? BloodType { get; set; }
-       
+        public ICollection<Appointment> Appointments { get; set; }
+             = new List<Appointment>();
+
         [ForeignKey(nameof(UserId))]
         public users users  { get; set; }
 

@@ -68,6 +68,80 @@ namespace DoctorApp.Api.Controllers
 
             return Ok(doctors);
         }
+        // GET DOCTOR DETAILS
+        [HttpGet("{doctorId}")]
+        public async Task<IActionResult> GetDoctorDetails(int doctorId)
+        {
+            var doctor = await _context.Doctors
+                .Include(d => d.users)
+                .Include(d => d.DoctorSpecializations)
+                    .ThenInclude(ds => ds.Specialization)
+                .FirstOrDefaultAsync(d => d.Id == doctorId);
 
+            if (doctor == null)
+            {
+                return NotFound("Doctor not found");
+            }
+
+            var result = new
+            {
+                DoctorId = doctor.Id,
+
+                Name = doctor.users.name,
+
+                Email = doctor.users.email,
+
+                PhoneNumber = doctor.users.phoneNumber,
+
+                Address = doctor.users.Address,
+
+                Gender = doctor.users.gender,
+
+                Age = doctor.users.age,
+
+                LicenseNumber = doctor.liscenceNumber,
+
+                HourRate = doctor.HourRate,
+
+                Specializations = doctor.DoctorSpecializations
+                    .Select(ds => ds.Specialization.Name)
+                    .ToList()
+            };
+
+            return Ok(result);
+        }
+        // SEARCH DOCTORS BY NAME
+        [HttpGet("Search")]
+        public async Task<IActionResult> SearchDoctors(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return BadRequest("Please enter a doctor name.");
+            }
+
+            var doctors = await _context.Doctors
+                .Include(d => d.users)
+                .Include(d => d.DoctorSpecializations)
+                    .ThenInclude(ds => ds.Specialization)
+                .Where(d => d.users.name.Contains(name))
+                .Select(d => new
+                {
+                    DoctorId = d.Id,
+                    Name = d.users.name,
+                    HourRate = d.HourRate,
+
+                    Specializations = d.DoctorSpecializations
+                        .Select(ds => ds.Specialization.Name)
+                        .ToList()
+                })
+                .ToListAsync();
+
+            if (doctors.Count == 0)
+            {
+                return NotFound("No doctors found.");
+            }
+
+            return Ok(doctors);
+        }
     }
 }

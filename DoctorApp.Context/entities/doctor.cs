@@ -1,28 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DoctorApp.Context.entities
 {
-    public class doctor 
+    public class doctor
     {
         public int Id { get; set; }
+
         public int UserId { get; set; }
 
         public string? liscenceNumber { get; set; }
 
-        public Decimal? HourRate { get; set; }
-        //Make Relation between  doctor and users entities
+        public decimal? HourRate { get; set; }
+
         public ICollection<DoctorSpecialization> DoctorSpecializations { get; set; }
-        = new List<DoctorSpecialization>();
+            = new List<DoctorSpecialization>();
+
+        public ICollection<Appointment> Appointments { get; set; }
+            = new List<Appointment>();
 
         [ForeignKey(nameof(UserId))]
         public users users { get; set; }
-
-
-
     }
 }
